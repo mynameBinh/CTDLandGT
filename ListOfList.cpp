@@ -285,7 +285,7 @@ int main () {
     cout << "==== Trước khi xóa ====" << endl;
     printList(danhSachTruyen);
 
-    cout << "==== sau khi xóa ====" << endl;
+    cout << "==== sau khi xóa (naru) ====" << endl;
     mainNode* nodeCanXoa = findId(danhSachTruyen, "naru");
     string thongBaoXoa = nodeCanXoa->id;
     removeNode(danhSachTruyen, nodeCanXoa);
