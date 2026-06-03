@@ -6,15 +6,15 @@ using namespace std;
 //Hàm khởi tạo node
 struct node {
     int data;
-    node *L, *R;
+    node *Left, *Right;
 };
 
 //hàm tạo node quen thuộc
 node* createNode(int value){
     node* tmp = new node();
     tmp->data = value;
-    tmp->L = nullptr;
-    tmp->R = nullptr;
+    tmp->Left = nullptr;
+    tmp->Right = nullptr;
     
     return tmp;
 };
@@ -31,17 +31,17 @@ void insertNodeInTree(node* &top, int value){
     node* current = top;
     while(true){
         if(value < current->data) {
-            if(current->L == nullptr){
-                current->L = newNode;
+            if(current->Left == nullptr){
+                current->Left = newNode;
                 return;
             }
-            current = current->L;
+            current = current->Left;
         } else {
-            if(current->R == nullptr){
-                current->R = newNode;
+            if(current->Right == nullptr){
+                current->Right = newNode;
                 return;
             }
-            current = current->R;
+            current = current->Right;
         }
     }
 
@@ -53,25 +53,25 @@ void insertNodeInTree(node* &top, int value){
 void duyetNLR(node* T){
     if(T != nullptr){
         cout << T->data << " ";
-        duyetNLR(T->L);
-        duyetNLR(T->R);
+        duyetNLR(T->Left);
+        duyetNLR(T->Right);
     }
 }
 
 //hàm duyệt Trung thứ tự LNR (Trái, gốc, phải) in từ phải sang trái sẽ in theo tăng dần
 void duyetLNR(node* T){
     if(T != nullptr){
-        duyetLNR(T->L);
+        duyetLNR(T->Left);
         cout << T->data << " ";
-        duyetLNR(T->R);
+        duyetLNR(T->Right);
     }
 }
 
 //Hàm duyệt Hậu thứ tự LRN(trái - phải - gốc)
 void duyetLRN(node* T){
     if(T != nullptr){
-        duyetLRN(T->L);
-        duyetLRN(T->R);
+        duyetLRN(T->Left);
+        duyetLRN(T->Right);
         cout << T->data << " ";
     }
 }
@@ -82,8 +82,8 @@ void duyetLRN(node* T){
 int treeHeight(node* T){
     if(T == nullptr) return 0;
 
-    int Hleft = treeHeight(T->L);
-    int Hright = treeHeight(T->R);
+    int Hleft = treeHeight(T->Left);
+    int Hright = treeHeight(T->Right);
 
     return 1+(Hleft < Hright ? Hright : Hleft);
 }
@@ -91,24 +91,24 @@ int treeHeight(node* T){
 //Hàm đếm tổng số nút
 int countNode(node* T){
     if(T == nullptr) return 0;
-    return 1 + countNode(T->L) + countNode(T->R);
+    return 1 + countNode(T->Left) + countNode(T->Right);
 }
 
 //Đếm số nút lá (nút không có con)
 int countLeafNode(node* T){
     if(T == nullptr) return 0;
-    if(T->L == nullptr && T->R == nullptr) return 1;
-    return countLeafNode(T->L) + countLeafNode(T->R);
+    if(T->Left == nullptr && T->Right == nullptr) return 1;
+    return countLeafNode(T->Left) + countLeafNode(T->Right);
 }
 
 //Tính cấp của cây (CÂU 3b - ĐỀ 2022-2023)
 // đề yêu cầu nói là: 0 (rỗng/1 nút), 1 (cây suy biến - mỗi nút có max 1 con), 2 (cây có ít nhất 1 nút có 2 con).
 int coutNodeLevel(node* T){
-    if(T == nullptr ||  (T->L == nullptr && T->R == nullptr)) return 0;
-    if(T->L != nullptr && T->R != nullptr) return 2; //nếu nút có 2 con thì cấp 2 luôn hehe
+    if(T == nullptr ||  (T->Left == nullptr && T->Right == nullptr)) return 0;
+    if(T->Left != nullptr && T->Right != nullptr) return 2; //nếu nút có 2 con thì cấp 2 luôn hehe
 
-    int levelLeft = coutNodeLevel(T->L);
-    int levelRight = coutNodeLevel(T->R);
+    int levelLeft = coutNodeLevel(T->Left);
+    int levelRight = coutNodeLevel(T->Right);
 
     if(levelLeft == 2 || levelRight == 2) return 2;
 
@@ -120,13 +120,13 @@ int coutNodeLevel(node* T){
 int min(node* T){
     int minVal = T->data;
 
-    if(T->L != nullptr){
-        int minLeft = min(T->L);
+    if(T->Left != nullptr){
+        int minLeft = min(T->Left);
         if(minLeft < minVal) minVal = minLeft;
     }
 
-    if(T->R != nullptr){
-        int minRight = min(T->R);
+    if(T->Right != nullptr){
+        int minRight = min(T->Right);
         if(minRight < minVal) minVal = minRight;
     }
 
@@ -137,14 +137,14 @@ int min(node* T){
 node* pDad(node* T, node* p){
     if(T == nullptr || T == p) return nullptr;  //nếu T rỗng hoặc T là chính p thì null vì mồ côi cha
 
-    if(T->L == p || T->R == p) return T;  //nếu trái phái chứa p thì nó là daddy của p
+    if(T->Left == p || T->Right == p) return T;  //nếu trái phái chứa p thì nó là daddy của p
 
     //tìm bên trái trước
-    node* left = pDad(T->L, p);
+    node* left = pDad(T->Left, p);
     if(left != nullptr) return left;
 
     //trái không có thì tìm bên phải
-    node* right = pDad(T->R, p);
+    node* right = pDad(T->Right, p);
     return right;
 }
 
@@ -154,10 +154,10 @@ int mucNode(node* T, node* p) {
     if(T == nullptr) return 0;
     if(T == p) return 1;
 
-    int mucLeft = mucNode(T->L, p);
+    int mucLeft = mucNode(T->Left, p);
     if(mucLeft > 0) return 1 + mucLeft; // đã tìm thấy mức trái
 
-    int mucRight = mucNode(T->R, p);
+    int mucRight = mucNode(T->Right, p);
     if(mucRight > 0) return 1 + mucRight; // da tim thay muc phai
 
     return 0; //neu ca 2 khong co
@@ -208,7 +208,7 @@ int main(){
 
     //Tìm cha cho bé p
     // giả xử p = 50
-    node* p = T->R->R; //50
+    node* p = T->Right->Right; //50
     cout << "\nCha của bé p là: ";
     node* value = pDad(T, p);
     cout << value->data;
