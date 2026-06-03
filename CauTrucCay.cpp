@@ -47,6 +47,8 @@ void insertNodeInTree(node* &top, int value){
 
 }
 
+
+//PHẦN 1: CÁC THUẬT TOÁN DUYỆT CÂY CƠ BẢN
 //hàm duyệt Tiền thứ tự NLR (gốc, trái, phải)
 void duyetNLR(node* T){
     if(T != nullptr){
@@ -56,7 +58,111 @@ void duyetNLR(node* T){
     }
 }
 
-//dang them... thuat toan...
+//hàm duyệt Trung thứ tự LNR (Trái, gốc, phải) in từ phải sang trái sẽ in theo tăng dần
+void duyetLNR(node* T){
+    if(T != nullptr){
+        duyetLNR(T->L);
+        cout << T->data << " ";
+        duyetLNR(T->R);
+    }
+}
+
+//Hàm duyệt Hậu thứ tự LRN(trái - phải - gốc)
+void duyetLRN(node* T){
+    if(T != nullptr){
+        duyetLRN(T->L);
+        duyetLRN(T->R);
+        cout << T->data << " ";
+    }
+}
+
+
+//PHẦN 2: ĐO LƯỜNG VÀ ĐẾM (DỄ RA THI NHẤT)
+//Hàm đo lường: TÍNH CHIỀU CAO CỦA CÂY  (đã ra trong đề thi câu 3a đề 2024-2025)
+int treeHeight(node* T){
+    if(T == nullptr) return 0;
+
+    int Hleft = treeHeight(T->L);
+    int Hright = treeHeight(T->R);
+
+    return 1+(Hleft < Hright ? Hright : Hleft);
+}
+
+//Hàm đếm tổng số nút
+int countNode(node* T){
+    if(T == nullptr) return 0;
+    return 1 + countNode(T->L) + countNode(T->R);
+}
+
+//Đếm số nút lá (nút không có con)
+int countLeafNode(node* T){
+    if(T == nullptr) return 0;
+    if(T->L == nullptr && T->R == nullptr) return 1;
+    return countLeafNode(T->L) + countLeafNode(T->R);
+}
+
+//Tính cấp của cây (CÂU 3b - ĐỀ 2022-2023)
+// đề yêu cầu nói là: 0 (rỗng/1 nút), 1 (cây suy biến - mỗi nút có max 1 con), 2 (cây có ít nhất 1 nút có 2 con).
+int coutNodeLevel(node* T){
+    if(T == nullptr ||  (T->L == nullptr && T->R == nullptr)) return 0;
+    if(T->L != nullptr && T->R != nullptr) return 2; //nếu nút có 2 con thì cấp 2 luôn hehe
+
+    int levelLeft = coutNodeLevel(T->L);
+    int levelRight = coutNodeLevel(T->R);
+
+    if(levelLeft == 2 || levelRight == 2) return 2;
+
+    return 1;
+}
+
+//PHẦN 3: TÌM KIẾM VÀ QUAN HỆ
+//Tìm giá trị nhỏ nhất trong cây(đã ra thi Câu 3a - đề 2023-2024)
+int min(node* T){
+    int minVal = T->data;
+
+    if(T->L != nullptr){
+        int minLeft = min(T->L);
+        if(minLeft < minVal) minVal = minLeft;
+    }
+
+    if(T->R != nullptr){
+        int minRight = min(T->R);
+        if(minRight < minVal) minVal = minRight;
+    }
+
+    return minVal;
+}
+
+//Tìm nút cha của nút p (đã ra thi câu 3b - đề 2024-2025)
+node* pDad(node* T, node* p){
+    if(T == nullptr || T == p) return nullptr;  //nếu T rỗng hoặc T là chính p thì null vì mồ côi cha
+
+    if(T->L == p || T->R == p) return T;  //nếu trái phái chứa p thì nó là daddy của p
+
+    //tìm bên trái trước
+    node* left = pDad(T->L, p);
+    if(left != nullptr) return left;
+
+    //trái không có thì tìm bên phải
+    node* right = pDad(T->R, p);
+    return right;
+}
+
+//Tính mức của nút p(đã ra đề câu 3c - 2024-2025)
+//Mức của gốc là 1 (không biết giáo trình trường mình là mức mấy 0 hoặc 1). Cứ đi xuống 1 nhánh thì mức tăng 1.
+int mucNode(node* T, node* p) {
+    if(T == nullptr) return 0;
+    if(T == p) return 1;
+
+    int mucLeft = mucNode(T->L, p);
+    if(mucLeft > 0) return 1 + mucLeft; // đã tìm thấy mức trái
+
+    int mucRight = mucNode(T->R, p);
+    if(mucRight > 0) return 1 + mucRight; // da tim thay muc phai
+
+    return 0; //neu ca 2 khong co
+}
+
 
 int main(){
     node* T = nullptr;
@@ -68,5 +174,49 @@ int main(){
     insertNodeInTree(T, 1);
     insertNodeInTree(T, 50);
 
+    //Duyệt tiền thứ tự
+    cout << "Duyệt tiền thứ tự: \n";
     duyetNLR(T);
+    
+    //Duyet trung thứ tự
+    cout << "\nDuyệt trung thứ tự: \n";
+    duyetLNR(T);
+
+    //Duyệt Hậu thứ tự
+    cout << "\nDuyet Hậu thứ tự: \n";
+    duyetLRN(T);
+
+    //Đếm chiều cao của cây
+    cout << "\nChiều cao của cây là: ";
+    cout << treeHeight(T);
+
+    //Đếm tổng số nút
+    cout << "\nĐếm tổng số nút có trong cây: ";
+    cout << countNode(T);
+
+    //Đếm tổng số nút lá
+    cout << "\nTổng số nút lá (nút không có con): ";
+    cout << countLeafNode(T);
+
+    //Đếm cấp của nút
+    cout << "\nCaap của nút là: ";
+    cout << coutNodeLevel(T);
+
+    //Tìm giá trị nhỏ nhất trong cây
+    cout << "\nGía trị nhỏ nhất trong cây là: ";
+    cout << min(T);
+
+    //Tìm cha cho bé p
+    // giả xử p = 50
+    node* p = T->R->R; //50
+    cout << "\nCha của bé p là: ";
+    node* value = pDad(T, p);
+    cout << value->data;
+
+
+    //Mức của bé p                ^
+    // giả xử p = 50 của cái trên |
+    cout << "\nMức của bé p là: ";
+    cout << mucNode(T, p);
+
 }
